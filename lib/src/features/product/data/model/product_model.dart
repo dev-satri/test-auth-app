@@ -1,14 +1,3 @@
-import 'dart:convert';
-
-///Make use of https://app.quicktype.io/ is you find it difficult to create model class manually
-
-List<ProductModel> productModelFromJson(String str) => List<ProductModel>.from(
-  json.decode(str).map((x) => ProductModel.fromJson(x)),
-);
-
-String productModelToJson(List<ProductModel> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
-
 class ProductModel {
   String? id;
   String? productTitle;

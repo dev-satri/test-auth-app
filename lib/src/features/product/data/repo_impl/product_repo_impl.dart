@@ -21,9 +21,8 @@ class ProductRepositoryImpl implements ProductRepository {
   }
 
   @override
-  deleteProduct() {
-    // TODO: implement deleteProduct
-    throw UnimplementedError();
+  Future<Either<Failure, Map<String, dynamic>>> deleteProduct(String id) async {
+    return await _productRemoteSource.deleteProduct(id);
   }
 
   @override

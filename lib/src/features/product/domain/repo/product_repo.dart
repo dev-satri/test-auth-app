@@ -6,5 +6,5 @@ abstract class ProductRepository {
   Future<Either<Failure, List<ProductModel>>> fetchProducts();
   addProduct();
   updateProduct();
-  deleteProduct();
+  Future<Either<Failure, Map<String, dynamic>>> deleteProduct(String id);
 }

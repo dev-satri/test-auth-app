@@ -6,6 +6,7 @@ import 'package:frontend/src/features/product/presentation/blocs/product_state.d
 class ProductBloc extends Bloc<ProductEvent, ProductState> {
   ProductBloc(this._productRepository) : super(ProductState()) {
     on<FetchAllProductEvent>(_fetchProduct);
+    on<DeleteProductEvent>(_delete);
   }
 
   final ProductRepository _productRepository;
@@ -23,6 +24,15 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
       (result) {
         emit(state.copyWith(isFetching: false, productModel: result));
       },
+    );
+  }
+
+  void _delete(DeleteProductEvent event, Emitter<ProductState> emit) async {
+    emit(state.copyWith(deleting: true));
+    final response = await _productRepository.deleteProduct(event.id);
+    response.fold(
+      (error) => emit(state.copyWith(failure: error, deleting: false)),
+      (result) => emit(state.copyWith(deleteResponse: result, deleting: false)),
     );
   }
 }

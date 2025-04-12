@@ -18,4 +18,11 @@ class ProductRemoteSource {
       return Right(products);
     });
   }
+
+  Future<Either<Failure, Map<String, dynamic>>> deleteProduct(String id) async {
+    final response = await _networkService.delete(
+      '${ApiEndpoints.deleteProduct}$id',
+    );
+    return response.fold((error) => Left(error), (result) => Right(result));
+  }
 }

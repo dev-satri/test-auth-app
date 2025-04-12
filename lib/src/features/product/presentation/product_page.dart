@@ -20,9 +20,9 @@ class ProductPage extends StatelessWidget {
           title: const Text('Product Page'),
           actions: [
             BlocBuilder<ProductBloc, ProductState>(
-              buildWhen:
-                  (previous, current) =>
-                      previous.isFetching != current.isFetching,
+              // buildWhen:
+              //     (previous, current) =>
+              //         previous.isFetching != current.isFetching,
               builder: (context, state) {
                 return IconButton(
                   onPressed: () {
@@ -35,14 +35,22 @@ class ProductPage extends StatelessWidget {
           ],
         ),
         body: BlocConsumer<ProductBloc, ProductState>(
-          listenWhen: (p, c) => p.failure != c.failure,
+          listenWhen:
+              (p, c) =>
+                  p.failure != c.failure ||
+                  p.deleteResponse != c.deleteResponse,
           listener: (context, state) {
             if (state.failure != null) {
               context.showSnackbar(state.failure!.message, isError: true);
             }
+
+            if (state.deleteResponse != null) {
+              context.showSnackbar(state.deleteResponse!['message']);
+              context.read<ProductBloc>().add(FetchAllProductEvent());
+            }
           },
           builder: (context, state) {
-            if (state.isFetching) {
+            if (state.isFetching || state.deleting) {
               return const Center(child: CircularProgressIndicator());
             }
 
@@ -105,22 +113,47 @@ class ProductPage extends StatelessWidget {
                         Positioned(
                           right: 8,
                           top: 8,
-                          child: InkWell(
-                            onTap: () {
-                              //TODO(Sangam): Add Deletion Logic
-                            },
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.redAccent,
-                                shape: BoxShape.circle,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  _editDialog(context);
+                                },
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.black,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  padding: const EdgeInsets.all(6),
+                                  child: const Icon(
+                                    Icons.edit,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                ),
                               ),
-                              padding: const EdgeInsets.all(6),
-                              child: const Icon(
-                                Icons.close,
-                                color: Colors.white,
-                                size: 16,
+                              SizedBox(width: 8),
+                              InkWell(
+                                onTap: () {
+                                  context.read<ProductBloc>().add(
+                                    DeleteProductEvent(product.id!),
+                                  );
+                                },
+                                child: Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.redAccent,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  padding: const EdgeInsets.all(6),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
                       ],
@@ -132,6 +165,13 @@ class ProductPage extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  void _editDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(title: Text('Edit Dialog')),
     );
   }
 }

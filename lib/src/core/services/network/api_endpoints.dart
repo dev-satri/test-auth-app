@@ -12,4 +12,5 @@ class ApiEndpoints {
   ///Product
   static const String _product = '/product';
   static const String allProducts = '$_product/all-product';
+  static const String deleteProduct = '$_product/';
 }
